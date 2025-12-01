@@ -1,0 +1,23 @@
+# Build stage
+FROM mcr.microsoft.com/devcontainers/cpp:ubuntu-22.04 AS build
+
+RUN apt-get update && apt-get install -y cmake build-essential
+
+WORKDIR /app
+COPY . /app
+
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+ && cmake --build build --config Release -j \
+ && strip build/bin/engine_app
+
+# Runtime stage (small)
+FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y libstdc++6 ca-certificates && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY --from=build /app/build/bin/engine_app /app/engine_app
+
+# Expose HTTP(18081) and TCP(9001)
+EXPOSE 18081 9001
+
+# topN=5, metrics.csv every 1000 events
+CMD ["/app/engine_app", "9001", "5", "/app/metrics.csv", "1000"]

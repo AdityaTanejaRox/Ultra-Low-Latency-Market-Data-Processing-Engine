@@ -1,0 +1,83 @@
+# --- BUILD OUTPUTS ---
+/build/
+/build/*/
+/CMakeFiles/
+/CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# --- BINARIES / LIBS ---
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+*.exe
+*.out
+
+# --- IDE / EDITOR FILES ---
+# VSCode
+.vscode/
+*.code-workspace
+
+# Visual Studio
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.user
+*.vs/
+Debug/
+Release/
+x64/
+ipch/
+*.pdb
+*.ilk
+
+# CLion / JetBrains
+.idea/
+*.iml
+
+# --- PYTHON ---
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+scripts/__pycache__/
+
+# --- PROJECT-SPECIFIC OUTPUT ---
+data/*.csv
+data/*.log
+data/*_throughput.csv
+data/metrics*.csv
+
+# The example CLX5 input should be kept, so DO NOT ignore:
+# data/CLX5_lines.txt
+
+# --- DOCKER ---
+/docker-data/
+/docker-cache/
+*.tar
+
+# --- OS FILES ---
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+# Swap files
+*.swp
+*.swo
+
+# --- MISC ---
+*.log
+*.tmp
+core.*

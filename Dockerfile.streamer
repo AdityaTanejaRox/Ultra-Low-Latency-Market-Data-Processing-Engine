@@ -1,0 +1,14 @@
+FROM mcr.microsoft.com/devcontainers/cpp:ubuntu-22.04 AS build
+RUN apt-get update && apt-get install -y cmake build-essential
+WORKDIR /app
+COPY . /app
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+ && cmake --build build --config Release -j \
+ && strip build/bin/streamer_app
+
+FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y libstdc++6 ca-certificates && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY --from=build /app/build/bin/streamer_app /app/streamer_app
+COPY data/CLX5_lines.txt /app/CLX5_lines.txt
+CMD ["/app/streamer_app", "engine", "9001", "/app/CLX5_lines.txt", "250000"]
