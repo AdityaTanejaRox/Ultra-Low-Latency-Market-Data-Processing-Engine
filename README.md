@@ -328,7 +328,13 @@ cmake --build build --config Release
 ```
 **2. Start Engine**
 ```
+# engine_app <port> <topN> [metrics_csv] [log_every] [json_snapshots_file]
+
 ./build/bin/Release/streamer_app.exe 9001 ./data/CLX5_lines.txt 250000
+
+# Run engine WITH JSON snapshots (this is very slow for debug/analysis mode)
+./build/bin/Release/engine_app.exe 9001 5 data/metrics.csv 1000 data/book_snapshots.jsonl
+
 ```
 **3. Start Streamer**
 ```
@@ -336,7 +342,15 @@ cmake --build build --config Release
 ```
 **4. Monitor**
 ```
+# Engine Stats
 curl http://127.0.0.1:18081/stats
+
+# Top-of-book Snapshot
 curl http://127.0.0.1:18081/book/top?n=5
+
+# Health Check
+curl http://127.0.0.1:18081/health
+
+# Live CSV Metrics
 Get-Content data/metrics.csv -Wait
 ```

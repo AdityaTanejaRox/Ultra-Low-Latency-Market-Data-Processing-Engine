@@ -7,7 +7,7 @@ int main(int argc, char** argv)
     std::string port = "9001";
     size_t top_n = 5;
 
-    // usage: engine_app <port> <topN> [metrics_csv] [log_every]
+    // usage: engine_app <port> <topN> [metrics_csv] [log_every] [snapshots_json]
     if (argc > 1) port = argv[1];
     if (argc > 2) top_n = static_cast<size_t>(std::stoul(argv[2]));
 
@@ -21,6 +21,12 @@ int main(int argc, char** argv)
             app.enable_csv_metrics(metrics_csv, every);
             std::cout << "[engine] CSV metrics -> " << metrics_csv
                         << " (every " << every << " events)\n";
+        }
+        if (argc > 5)
+        {
+            std::string snapshots_json = argv[5];
+            app.enable_json_snapshots(snapshots_json);
+            std::cout << "[engine] JSON snapshots -> " << snapshots_json << "\n";
         }
         return app.run(host, port, top_n);
     }

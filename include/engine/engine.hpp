@@ -27,6 +27,7 @@ namespace engine
         int run(const std::string& host, const std::string& port, size_t top_n);
         void enable_csv_metrics(const std::string& path, size_t every);
         static void run_http_server(EngineApp* self, int port);
+        void enable_json_snapshots(const std::string& path);
     private:
 
         OrderBook book_;
@@ -61,6 +62,12 @@ namespace engine
         std::atomic<uint64_t> e2e_bins_[E2E_BINS + 1]{};
         std::atomic<uint64_t> e2e_samples_{0};
         std::atomic<uint64_t> e2e_sum_us_{0};
+
+        // JSON writers
+        std::ofstream json_snapshots_;   // JSON snapshots file
+        bool          json_enabled_ = false;
+
+        void write_snapshot_json(std::int64_t ts_ns);
 
         // helpers
         void record_e2e_latency_us(uint64_t us);

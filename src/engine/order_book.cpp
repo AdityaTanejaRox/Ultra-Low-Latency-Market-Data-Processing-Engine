@@ -1,5 +1,6 @@
 #include "engine/order_book.hpp"
 #include <algorithm>
+#include <limits>
 
 namespace engine
 {
@@ -154,6 +155,11 @@ namespace engine
             snap.asks.push_back({it->first, sum, (uint32_t)it->second.size()});
         }
         return snap;
+    }
+
+    BookSnapshot OrderBook::snapshot_full() const
+    {
+        return snapshot_top_n(std::numeric_limits<std::size_t>::max());
     }
 
 } // namespace engine

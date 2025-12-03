@@ -140,6 +140,45 @@ namespace engine
         }
     }
 
+    void EngineApp::enable_json_snapshots(const std::string& path)
+    {
+        json_snapshots_.open(path, std::ios::out | std::ios::trunc);
+        if (!json_snapshots_)
+        {
+            std::cerr << "[engine] failed to open JSON snapshots file: " << path << "\n";
+            return;
+        }
+        json_enabled_ = true;
+    }
+
+    void EngineApp::write_snapshot_json(std::int64_t ts_ns)
+    {
+        if (!json_enabled_ || !json_snapshots_.is_open()) return;
+
+        // grab a snapshot of the book – using snapshot_top_n()
+        auto snap = book_.snapshot_full();
+
+        json_snapshots_ << "{";
+        json_snapshots_ << "\"ts_ns\":" << ts_ns << ",\"bids\":[";
+        for (std::size_t i = 0; i < snap.bids.size(); ++i) {
+            const auto& lvl = snap.bids[i];
+            if (i) json_snapshots_ << ',';
+            json_snapshots_ << "{\"px\":" << lvl.price
+                            << ",\"qty\":" << lvl.total_qty
+                            << ",\"orders\":" << lvl.orders
+                            << "}";
+        }
+        json_snapshots_ << "],\"asks\":[";
+        for (std::size_t i = 0; i < snap.asks.size(); ++i) {
+            const auto& lvl = snap.asks[i];
+            if (i) json_snapshots_ << ',';
+            json_snapshots_ << "{\"px\":" << lvl.price
+                            << ",\"qty\":" << lvl.total_qty
+                            << ",\"orders\":" << lvl.orders
+                            << "}";
+        }
+        json_snapshots_ << "]}\n";
+    }
 
 
     static std::vector<std::string> split_csv(const std::string& s)
@@ -323,7 +362,15 @@ namespace engine
         {
             std::lock_guard<std::mutex> lg(mtx_);
             book_.on_event(ev);
+            
+            // But this would slow everything down....
+            if (json_enabled_)
+            {
+                write_snapshot_json(ev.ts_ns);
+            }
         }
+
+        
 
         // End-to-end latency: consumer apply time vs producer send wall-clock
         if (send_wall_ns != 0)

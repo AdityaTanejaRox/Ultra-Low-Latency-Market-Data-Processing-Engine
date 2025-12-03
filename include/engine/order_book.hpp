@@ -55,6 +55,7 @@ namespace engine
     public:
         void on_event(const MboEvent& ev);
         BookSnapshot snapshot_top_n(size_t n) const;
+        BookSnapshot snapshot_full() const;
 
     private:
         struct Order { int64_t price; int32_t qty; Side side; };
